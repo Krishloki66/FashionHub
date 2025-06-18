@@ -31,4 +31,4 @@ jobs:
           python scripts/update_observepoint.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          OP_API_KEY: ${{ secrets.OP_API_KEY }}
+          # OP_API_KEY: ${{ secrets.OP_API_KEY }}
