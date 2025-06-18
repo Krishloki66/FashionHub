@@ -1,31 +1,34 @@
-name: Detect Selector Changes
+name: Detect & Update ObservePoint
 
 on:
   push:
-    paths:
-      - '**/*.html'
-      - '**/*.css'
-      - '**/*.js'
-      - '**/*.jsx'
+    branches:
+      - main
 
 jobs:
-  detect_changes:
+  update-selectors:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          fetch-depth: 2
 
-      - name: Install Python dependencies
-        run: pip install beautifulsoup4 requests
+      - name: Setup Node and Python
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: Run selector diff script
-        run: python .github/scripts/diff_selectors.py
+      - name: Install dependencies
+        run: |
+          npm install puppeteer axios
+          pip install requests
+
+      - name: Run selector analysis and update ObservePoint
+        run: |
+          node scripts/compare-selectors.js
+          python scripts/update_observepoint.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          OBSERVEPOINT_API_KEY: ${{ secrets.OBSERVEPOINT_API_KEY }}
+          OP_API_KEY: ${{ secrets.OP_API_KEY }}
